@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+    
+<mapper namespace="cn.muchen.framework.dao.mapper.CommonMapper">
+	
+	<!-- 获取动态字典查询语句 -->
+	<select id="getDynamicSql" parameterType="string" resultType="string">
+		SELECT MULTSQL FROM DYNAMIC_DICT_CONFIG WHERE CONFIGID = #{dynamicConfigId}
+	</select>
+	
+	<!-- 获取动态字典 -->
+	<select id="getDynamicDicts" parameterType="string" resultType="map">
+		${querySql}
+	</select>
+	
+	<!-- 获取静态字典 -->
+	<select id="getStaticDicts" parameterType="string" resultType="map">
+		SELECT DCITCODE CODE, DICTNAME NAME FROM SYS_DICT WHERE DICTTYPE = #{dictType} AND VALIDATED = '1'
+	</select>
+	
+	<!-- 获取所有定时器配置 -->
+	<select id="getAllQuartas" parameterType="map" resultType="map">
+		SELECT JOBID, JBOGROUP, JOBTYPE, TASK, SCHEDULE
+		  FROM QUARTZ_JOB
+		 WHERE VALIDATED = '1'
+	</select>
+</mapper>

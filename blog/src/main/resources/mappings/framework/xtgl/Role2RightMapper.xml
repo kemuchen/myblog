@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+    
+<mapper namespace="cn.muchen.framework.dao.mapper.xtgl.Role2RightMapper">
+	
+	<!-- 角色表字段 -->
+	<sql id="ROLE2RIGHTID_COLUMN">
+		ROLE2RIGHTID, ROLEID, RIGHTID, VALIDATED, MEMO, BAE001, BAE002, BAE003, BAE004
+	</sql>
+	
+	<!-- 菜单表列名 -->
+	<sql id="SYS_RIGHT_COLUMN">
+		A.RIGHTID, A.SUBSYSTYPE, A.RIGHTNAME, A.RIGHTLEVEL, A.URL, A.ICON, A.SORTNO, A.VALIDATED, A.MEMO, A.BAE001, 
+		A.BAE002, A.BAE003, A.BAE004
+	</sql>
+	
+	<!-- 分页查询前缀 -->
+	<sql id="pagePrefix">
+		select * from ( select vv.*,rownum rownum_cus
+			from (
+	</sql>
+	
+	<!-- 1分页查询后缀 -->
+	<sql id="pageSuffix">
+		) vv )
+			<where>
+				<if test="currentPage != null">
+					rownum_cus between ((#{currentPage} - 1) * #{pageSize}) + 1 and #{currentPage} * #{pageSize}
+				</if>
+			</where>
+	</sql>
+	
+	<!-- 新增角色权限信息 -->
+	<insert id="insertRole2Right" parameterType="map">
+		INSERT INTO SYS_ROLE2RIGHT(<include refid="ROLE2RIGHTID_COLUMN"/>)
+		VALUES(SEQ_ROLE2RIGHTID.NEXTVAL, #{ROLEID}, #{RIGHTID}, #{VALIDATED}, #{MEMO}, SYSDATE, #{BAE002}, SYSDATE, #{BAE004})
+	</insert>
+	
+	<!-- 删除角色权限信息 -->
+	<delete id="deleteRole2Right" parameterType="integer">
+		DELETE FROM SYS_ROLE2RIGHT WHERE ROLE2RIGHTID =#{ROLE2RIGHTID}
+	</delete>
+	
+	<!-- 查询角色权限信息 -->
+	<select id="getRole2RightByPage" parameterType="map" resultType="map">
+		<include refid="pagePrefix"/>
+		SELECT B.ROLE2RIGHTID, B.ROLEID, C.ROLENAME, C.DESCRIPTION, <include refid="SYS_RIGHT_COLUMN"/>
+		  FROM SYS_RIGHT A,SYS_ROLE2RIGHT B, SYS_ROLE C
+		 <where>
+		 	B.ROLEID = C.ROLEID AND B.RIGHTID = A.RIGHTID
+		 	<if test="VALIDATED != null and VALIDATED != ''">AND B.VALIDATED = #{VALIDATED}</if>
+		 	<if test="ROLEID != null and ROLEID != ''">AND B.ROLEID = #{ROLEID}</if>
+		 	<if test="RIGHTID != null and RIGHTID != ''">AND B.RIGHTID = #{RIGHTID}</if>
+		 </where>
+		<include refid="pageSuffix"/>
+	</select>
+	
+	<!-- 查询角色权限数量 -->
+	<select id="getRole2RightCount" parameterType="map" resultType="integer">
+		SELECT COUNT(1)
+		  FROM SYS_RIGHT A,SYS_ROLE2RIGHT B, SYS_ROLE C
+		 <where>
+		 	B.ROLEID = C.ROLEID AND B.RIGHTID = A.RIGHTID
+		 	<if test="VALIDATED != null and VALIDATED != ''">AND B.VALIDATED = #{VALIDATED}</if>
+		 	<if test="ROLEID != null and ROLEID != ''">AND B.ROLEID = #{ROLEID}</if>
+		 	<if test="RIGHTID != null and RIGHTID != ''">AND B.RIGHTID = #{RIGHTID}</if>
+		 </where>
+	</select>
+	
+	<!-- 查询角色没有的权限信息 -->
+	<select id="getRoleNot2RightByPage" parameterType="map" resultType="map">
+		<include refid="pagePrefix"/>
+		SELECT <include refid="SYS_RIGHT_COLUMN"/>
+		  FROM SYS_RIGHT A
+		 <where>
+		 	NOT EXISTS (SELECT 1 FROM SYS_ROLE2RIGHT B WHERE A.RIGHTID = B.RIGHTID AND B.ROLEID = #{ROLEID} AND B.VALIDATED = '1')
+		 </where>
+		<include refid="pageSuffix"/>
+	</select>
+	
+	<!-- 角色没有的权限数量 -->
+	<select id="getRoleNot2RightCount" parameterType="map" resultType="integer">
+		SELECT COUNT(1)
+		  FROM SYS_RIGHT A
+		 <where>
+		 	NOT EXISTS (SELECT 1 FROM SYS_ROLE2RIGHT B WHERE A.RIGHTID = B.RIGHTID AND B.ROLEID = #{ROLEID} AND B.VALIDATED = '1')
+		 </where>
+	</select>
+	
+	<!-- 更新角色权限信息 -->
+	<update id="update" parameterType="map">
+		UPDATE SYS_ROLE2RIGHT
+		<set>
+			<if test="ROLEID !=  null and ROLEID != ''">ROLEID = #{ROLEID},</if>
+			<if test="RIGHTID !=  null and RIGHTID != ''">RIGHTID = #{RIGHTID},</if>
+			<if test="VALIDATED !=  null and VALIDATED != ''">VALIDATED = #{VALIDATED},</if>
+			<if test="MEMO !=  null and MEMO != ''">MEMO = #{MEMO},</if>
+			<if test="BAE004 !=  null and BAE004 != ''">BAE003 = SYSDATE, BAE004 = #{BAE004},</if>
+		</set>
+	</update>
+</mapper>

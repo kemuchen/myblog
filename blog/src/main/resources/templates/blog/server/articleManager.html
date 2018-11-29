@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon"/>
+	<link rel="stylesheet" href="/lib/layui/css/layui.css" media="all">
+	<link rel="stylesheet" href="/lib/layui/formSelects/formSelects.css"/>
+	<script src="/lib/layui/formSelects/jquery.min.js"></script>
+	<script src="/lib/layui/formSelects/formSelects.min.js"></script>
+    <script src="/lib/layui/layui.js"></script>
+	<script type="text/javascript" src="/js/fw.js"></script>
+</head>
+<body>
+	<input type="hidden" th:value="${session.user == null} ? '' : ${session.user.USERNAME}" id="USERNAME">
+	<!-- 查询条件 -->
+	<form class="layui-form" id="queryForm">
+		<div class="layui-form-item">
+	  		<div class="layui-inline">
+			    <label class="layui-form-label">文章标题</label>
+			    <div class="layui-input-block">
+			      	<input type="text" name="TITLE" placeholder="文章标题" autocomplete="off" class="layui-input">
+			    </div>
+			</div>
+		  	<div class="layui-inline">
+			    <label class="layui-form-label">文章分类</label>
+			    <div class="layui-input-block">
+			      	<select name="TYPEID" dictType="atricle_manager_typeid" isSelect="true" isDynamic="true"></select>
+			    </div>
+			</div>
+		  	<div class="layui-inline">
+			    <label class="layui-form-label">文章标签</label>
+			    <div class="layui-input-block">
+			    	<select name="TAGID" dictType="atricle_manager_tagid" isSelect="true" isDynamic="true"></select>
+			    </div>
+			</div>	    
+	  	</div>
+	  	<div class="layui-form-item">
+	  		<div class="layui-inline">
+			    <label class="layui-form-label">文章来源</label>
+			    <div class="layui-input-block">
+			      	<select name="SOURCE" dictType="SOURCE" isSelect="true"></select>
+			    </div>
+			</div>
+		  	<div class="layui-inline">
+			    <label class="layui-form-label">是否发布</label>
+			    <div class="layui-input-block">
+			      	<select name="SFFB" dictType="SFBZ" isSelect="true"></select>
+			    </div>
+			</div>
+		  	<div class="layui-inline">
+			    <label class="layui-form-label">有效标志</label>
+			    <div class="layui-input-block">
+			    	<select name="VALIDATED" dictType="VALIDATED" isSelect="true"></select>
+			    </div>
+			</div>	    
+	  	</div>
+	  	<p align="center">
+	  		<button class="layui-btn" onclick="oButtonInit.doQuery(); return false;">&emsp;<i class="layui-icon">&#xe669;</i> 查&nbsp;询&emsp;</button>
+	  		<button class="layui-btn" type="reset">&emsp;<i class="layui-icon">&#x1006;</i> 清&nbsp;除&emsp;</button>
+	  		<button class="layui-btn" onclick="oButtonInit.doAdd(); return false;">&emsp;<i class="layui-icon">&#xe608;</i> 新&nbsp;增&emsp;</button>
+	  	</p>
+	</form>
+	
+	<!-- 查询结果 -->
+	<div style="width: 99%">
+		<table class="layui-table" id="articleList" lay-filter="articleTable"></table>
+	</div>
+	
+	<!-- right操作 -->
+	<script type="text/html" id="articleBar">
+		<button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="update">
+			<i class="layui-icon">&#xe642;</i> 修改
+		</button>
+		<button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="edit">
+			<i class="layui-icon">&#xe642;</i> 编辑文章
+		</button>
+  		<button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delete">
+			<i class="layui-icon">&#xe640;</i> 删除
+		</button>
+	</script>
+	
+	<!-- saveOrUpdate -->
+	<div id="saveOrUpdate" style="display: none;">
+		<div style="padding: 20px;">
+			<form class="layui-form" id="saveForm">
+				<input type="hidden" name="ARTICLEID">
+				<div class="layui-form-item">
+					<label class="layui-form-label">文章标题</label>
+				    <div class="layui-input-block">
+				      	<input type="text" name="TITLE" placeholder="文章标题" autocomplete="off" 
+				      		class="layui-input" lay-verify="required|maxlength100">
+				    </div>
+				</div>
+				<div class="layui-form-item">
+				    <label class="layui-form-label">文章摘要</label>
+				    <div class="layui-input-block">
+				    	<textarea name="ABSTRACT" placeholder="文章摘要" class="layui-textarea" lay-verify="required|maxlength1000"></textarea>
+				    </div>
+			    </div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">文章分类</label>
+				    <div class="layui-input-block">
+				    	<select name="TYPEID" dictType="atricle_manager_typeid" isSelect="true" lay-verify="required"></select><!-- 
+						<select name="TYPEID" xm-select="TYPEIDS" placeholder="文章分类" dictType="atricle_manager_typeid" 
+							xm-select-search isDynamic="true" lay-verify="required"></select> -->
+				    </div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">文章标签</label>
+				    <div class="layui-input-block">
+						<select name="TAGID" xm-select="TAGIDS" placeholder="文章标签" dictType="atricle_manager_tagid" 
+							xm-select-search isDynamic="true" lay-verify="required"></select>
+				    </div>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-inline">
+						<label class="layui-form-label">作者</label>
+					    <div class="layui-input-block">
+					      	<input type="text" name="AUTHOR" placeholder="作者" autocomplete="off" 
+					      		class="layui-input" lay-verify="required|maxlength100">
+					    </div>
+					</div>    
+				    <div class="layui-inline">
+						<label class="layui-form-label">有效标志</label>
+					    <div class="layui-input-block">
+					      	<select name="VALIDATED" dictType="VALIDATED" isSelect="true" lay-verify="required"></select>
+					    </div>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-inline">
+						<label class="layui-form-label">文章来源</label>
+					    <div class="layui-input-block">
+					    	<select name="SOURCE" dictType="SOURCE" isSelect="true" lay-verify="required"></select>
+					    </div>
+					</div>
+					<div class="layui-inline">
+						<label class="layui-form-label">是否发布</label>
+					    <div class="layui-input-block">
+							<select name="SFFB" dictType="SFBZ" isSelect="true" lay-verify="required"></select>
+					    </div>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-inline">
+						<label class="layui-form-label">文章封面</label>
+					    <div class="layui-input-block">
+					      	<input type="text" name="PHOTO" placeholder="文章封面" autocomplete="off" 
+					      		class="layui-input" disabled="disabled" lay-verify="required">
+					    </div>
+				    </div>
+				    <button class="layui-btn" id="uploadPhoto" onclick="javascript: void(0); return false;">&emsp;<i class="layui-icon">&#xe681;</i> 上&nbsp;传&emsp;</button>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">备注</label>
+				    <div class="layui-input-block">
+				    	<textarea name="MEMO" placeholder="备注" class="layui-textarea" lay-verify="maxlength1000"></textarea>
+				    </div>
+				</div>
+				<p align="center">
+			  		<button class="layui-btn" onclick="oButtonInit.doSave(); return false;">
+			  			&emsp;<i class="layui-icon">&#xe605;</i> 保&nbsp;存&emsp;
+			  		</button>
+			  		<button class="layui-btn" type="reset">&emsp;<i class="layui-icon">&#x1006;</i> 清&nbsp;除&emsp;</button>
+			  	</p>
+			</form>
+		</div>
+	</div>
+	
+	<!-- edit article -->
+	<div id="edit" style="display: none;">
+		<form id="editForm">
+			<input type="hidden" name="ARTICLEID">
+		</form>
+		<textarea id="CONTENT" style="display: none;"></textarea>
+		<p align="center" style="margin-top: 10px;">
+	  		<button class="layui-btn" onclick="oButtonInit.doSaveEdit(); return false;">
+	  			&emsp;<i class="layui-icon">&#xe605;</i> 保&nbsp;存&emsp;
+	  		</button>
+	  	</p>
+	</div>
+</body>
+<script type="text/javascript" src="/js/blog/server/articleManager.js"></script>
+<script type="text/javascript">
+var element, $, layer, table, form, layedit, upload;
+
+layui.use([ 'element', 'layer', 'jquery', 'table', 'form', 'layedit', 'upload'], function() {
+	element = layui.element;
+	$ = layui.jquery;
+	layer = layui.layer;
+	table = layui.table;
+	form = layui.form;
+	layedit = layui.layedit;
+	upload = layui.upload;
+
+	$(function(){
+		oPageInit.pageInit();
+	})
+});
+</script>
+</html>

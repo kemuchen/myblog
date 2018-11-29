@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+    
+<mapper namespace="cn.muchen.blog.server.dao.mapper.ArticleTypeMapper">
+	<!-- 字段 -->
+	<sql id="ARTICLE_TYPE_COLUMN">
+		TYPEID, TYPENAME, VALIDATED, MEMO, BAE001, BAE002, BAE003, BAE004
+	</sql>
+	
+	<!-- 分页查询前缀 -->
+	<sql id="pagePrefix">
+		select * from ( select vv.*,rownum rownum_cus
+			from (
+	</sql>
+	
+	<!-- 1分页查询后缀 -->
+	<sql id="pageSuffix">
+		) vv )
+			<where>
+				<if test="currentPage != null">
+					rownum_cus between ((#{currentPage} - 1) * #{pageSize}) + 1 and #{currentPage} * #{pageSize}
+				</if>
+			</where>
+	</sql>
+	
+	<!-- insertArticleType -->
+	<insert id="insertArticleType" parameterType="map">
+		INSERT INTO BLOG_ARTICLETYPE (<include refid="ARTICLE_TYPE_COLUMN"/>)
+		VALUES(SEQ_TYPEID.NEXTVAL, #{TYPENAME}, #{VALIDATED}, #{MEMO}, SYSDATE, #{USERID}, SYSDATE, #{USERID})
+	</insert>
+	
+	<!-- deleteArticleType -->
+	<delete id="deleteArticleType" parameterType="integer">
+		DELETE FROM BLOG_ARTICLETYPE WHERE TYPEID = #{TYPEID}
+	</delete>
+	
+	<!-- pageQueryArticleTypes -->
+	<select id="pageQueryArticleTypes" parameterType="map" resultType="map">
+		<include refid="pagePrefix"/>
+			SELECT <include refid="ARTICLE_TYPE_COLUMN"/>
+			  FROM BLOG_ARTICLETYPE
+			 <where>
+			 	<if test="TITLE != null and TITLE != ''">AND INSTR(TYPENAME, #{TYPENAME}) = 1</if>
+			 	<if test="VALIDATED != null and VALIDATED != ''">AND VALIDATED = #{VALIDATED}</if>
+			 </where>
+		<include refid="pageSuffix"/>
+	</select>
+	
+	<!-- artilelTypeCount -->
+	<select id="articleTypeCount" parameterType="map" resultType="integer">
+		SELECT COUNT(1) FROM BLOG_ARTICLETYPE
+		<where>
+		 	<if test="TITLE != null and TITLE != ''">AND INSTR(TYPENAME, #{TYPENAME}) = 1</if>
+			 	<if test="VALIDATED != null and VALIDATED != ''">AND VALIDATED = #{VALIDATED}</if>
+		 </where>
+	</select>
+	
+	<!-- getArticleType -->
+	<select id="getArticleType" parameterType="map" resultType="map">
+		SELECT <include refid="ARTICLE_TYPE_COLUMN"/> FROM BLOG_ARTICLETYPE WHERE TYPEID = #{TYPEID}
+	</select>
+	
+	<!-- updateArticleType -->
+	<update id="updateArticleType" parameterType="map">
+		UPDATE BLOG_ARTICLETYPE
+		 <set>
+		 	<if test="TYPENAME != null and TYPENAME != ''">TYPENAME = #{TYPENAME},</if>
+		 	<if test="VALIDATED != null and VALIDATED != ''">VALIDATED = #{VALIDATED},</if>
+		 	<if test="MEMO != null and MEMO != ''">MEMO = #{MEMO},</if>
+		 	<if test="USER != null and USER != ''">BAE003 = SYSDATE, BAE004 = #{USER},</if>
+		 </set>
+		 WHERE TYPEID = #{TYPEID}
+	</update>
+</mapper>
