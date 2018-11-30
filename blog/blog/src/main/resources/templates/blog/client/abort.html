@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/lib/layui/css/layui.css" media="all">
+	<link rel="stylesheet" href="/css/blog/articleDetail.css" media="all" >
+	<link rel="stylesheet" href="/css/blog/index.css" media="all" >
+	<link rel="stylesheet" href="/css/blog/abort.css" media="all" >
+    <script src="/lib/layui/layui.js"></script>
+	<script type="text/javascript" src="/js/fw.js"></script>
+</head>
+<body>
+	<input type="hidden" th:value="${session.user == null} ? '' : ${session.user.USERID}" id="USERID">
+	<div class="abort">
+		<!-- 个人介绍 -->
+		<div class="grjs">
+			<img alt="" src="/images/avator.jpg">
+			<div style="width: 95%">
+				<div class="xm">慕辰</div>
+				<div class="grxx">
+					90后程序猿，宅而不肥，喜欢看书，运动，当然还有撸代码
+					<img src="/lib/layui/images/face/16.gif" alt="[太开心]">。
+				</div>
+				<div class="grxx">追求平凡，但不接受平庸。</div>
+			</div>
+		</div>
+		
+		<!-- 留言列表 -->
+		<div>
+			<!-- title -->
+			<div class="title">
+				<span class="layui-breadcrumb" lay-separator="">
+					<a href="javascript:void(0)" class="layui-this"><span>网友留言</span></a>
+				</span>
+			</div>
+			<div class="critic">
+				<div id="MESSAGE"></div>
+				<p align="right" style="padding: 20px;">
+					<button class="layui-btn layui-btn-radius layui-btn-normal" onclick="oAbortBtn.critic()">
+						<i class="fa fa-weixin"></i>&nbsp;畅言一下
+					</button>
+				</p>
+
+				<!-- 展示留言 -->
+				<div class="critic-list">
+					<div class="lastest">最新留言</div>
+					<div class="rightcount"></div>
+				</div>
+				<!-- 留言列表 -->
+				<div>
+					<ul id="criticList"></ul>
+				</div>
+				
+				<div id="reply" style="display: none;">
+					<div id="REPLY_EDIT" style="display: none;"></div>
+					<p align="right" style="padding: 20px;">
+						<button class="layui-btn layui-btn-radius layui-btn-normal" onclick="oAbortBtn.criticReply()">
+							<i class="fa fa-weixin"></i>&nbsp;提交
+						</button>
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript" src="/js/blog/client/abort.js"></script>
+<script type="text/javascript">
+var layer, $, element, layedit, userid;
+layui.use([ 'layer', 'jquery', 'element', 'layedit'], function(){
+	layer = layui.layer;
+	$ = layui.jquery;
+	element = layui.element;
+	layedit = layui.layedit;
+	
+	userid = $("#USERID").val();
+	// 初始化界面
+	$(function() {
+		oAbortInit.fnPageInit();
+	})
+});
+</script>
+</html>

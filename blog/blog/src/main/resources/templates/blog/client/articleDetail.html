@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="/lib/layui/css/layui.css" media="all">
+	<link rel="stylesheet" href="/css/blog/articleDetail.css" media="all" >
+	<link rel="stylesheet" href="/css/blog/index.css" media="all" >
+	<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css" media="all">
+    <script src="/lib/layui/layui.js"></script>
+	<script type="text/javascript" src="/js/fw.js"></script>
+</head>
+<body>
+	<article>
+		<div class="left">
+			<div class="whitebg border-radius">
+				<!-- ARTICLEID -->
+				<input type="hidden" th:value="${ARTICLEID}" id="ARTICLEID">
+				<input type="hidden" th:value="${session.user == null} ? '' : ${session.user.USERID}" id="USERID">
+				
+				<!-- title -->
+ 				<div class="title">
+					<span class="layui-breadcrumb" lay-separator="">
+						<a href="javascript:void(0)" class="layui-this"><span>个人博客日记</span></a>
+					</span>
+				</div>
+				<div class="article">					
+					<!-- article_tilte -->
+					<h1 class="article_tilte"></h1>
+					<!-- article_info -->
+					<p class="article_info">
+						<span class="article_author"></span>
+						<span class="article_date"></span>
+						<span class="article_tyle"></span>
+						<span class="article_read"></span>
+					</p>
+					<!-- article_abstract -->
+					<p class="article_abstract"></p>
+					<!-- 文章内容 -->
+					<div class="article_text"></div>
+					<!-- share -->
+					<p class="share">
+						<b>转载</b>：感谢您对慕辰个人博客网站的认可，以及对我原创作品以及文章的青睐，非常欢迎各位朋友分享到个人站长或者朋友圈，
+						但转载请说明文章出处“来源慕辰个人博客”。<a href="http://22815l1b14.iask.in/blog/index/home" target="_blank">http://22815l1b14.iask.in/blog/index/home</a>
+					</p>
+					<p align="center" style="padding: 20px;">
+						<button class="layui-btn layui-btn-radius layui-btn-normal" onclick="oButtonInit.praiseAritcle()"><i class="layui-icon">&#xe6c6;</i>赞一个（<span id="article-dz"></span>）</button>
+						<button class="layui-btn layui-btn-radius layui-btn-warm" onclick="oButtonInit.tradeArticel()"><i class="layui-icon">&#xe6c5;</i>呵呵（<span id="article-undz"></span>）</button>
+					</p>
+					<!-- nextinfo -->
+					<div class="nextinfo">
+						<p>上一篇：<a href=""></a></p>
+						<p>下一篇：<a href=""></a></p>
+					</div>
+				</div>
+			</div>
+			<!-- critic -->
+			<div class="whitebg border-radius margin-top">
+				<!-- title -->
+				<div class="title">
+					<span class="layui-breadcrumb" lay-separator="">
+						<a href="javascript:void(0)" class="layui-this"><span>文章评论</span></a>
+					</span>
+				</div>
+				<div class="critic">
+					<div id="CRITIC"></div>
+					<p align="right" style="padding: 20px;">
+						<button class="layui-btn layui-btn-radius layui-btn-normal" onclick="oButtonInit.critic()">
+							<i class="fa fa-weixin"></i>&nbsp;畅言一下
+						</button>
+					</p>
+	
+					<!-- 展示评论 -->
+					<div class="critic-list">
+						<div class="lastest">最新评论</div>
+						<div class="rightcount"></div>
+					</div>
+					<!-- 评论列表 -->
+					<div>
+						<ul id="criticList"></ul>
+					</div>
+					
+					<div id="reply" style="display: none;">
+						<div id="REPLY_EDIT" style="display: none;"></div>
+						<p align="right" style="padding: 20px;">
+							<button class="layui-btn layui-btn-radius layui-btn-normal" onclick="oButtonInit.criticReply()">
+								<i class="fa fa-weixin"></i>&nbsp;提交
+							</button>
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+ 		<div class="right border-radius">
+ 			<!-- card -->
+			<div class="card margin-left">
+				<h2>我的名片</h2>
+				<p>网名：muchen | 慕辰</p>
+				<p>职业：java程序猿</p>
+				<p>现居：湖北省-武汉市</p>
+				<p>Email：2584073978@qq.com</p>
+				<ul class="linkmore">
+					<li><a href="/blog/index" target="_top" class="iconfont icon-zhuye" title="网站首页"><i class="fa fa-home"></i></a></li>
+					<li><a href="" target="_blank" class="iconfont icon-qq" title="QQ联系我"><i class="fa fa-qq"></i></a></li>
+					<li><a href="" target="_blank" class="iconfont icon-youxiang" title="我的邮箱"><i class="fa fa-envelope"></i></a></li>
+					<li><a href="" target="_blank" class="iconfont icon-weixin" title="我的微信"><i class="fa fa-weixin"></i></a></li>
+				</ul>
+			</div>
+			<!-- notice -->
+			<div class="rank margin-left">
+				<div class="title">
+					<span class="layui-breadcrumb" lay-separator="">
+						<a href="javascript:void(0)" class="layui-this"><span>点击排行</span></a>
+					</span>
+				</div>
+				<ul id="rankList"></ul>
+			</div>
+			<!-- notice -->
+			<div class="rank margin-left">
+				<div class="title">
+					<span class="layui-breadcrumb" lay-separator="">
+						<a href="javascript:void(0)" class="layui-this"><span>网站公告</span></a>
+					</span>
+				</div>
+				<ul id="noticeList"></ul>
+			</div>
+		</div>
+	</article>
+</body>
+<script type="text/javascript" src="/js/blog/client/articleDetail.js"></script>
+<script type="text/javascript">
+var layer, $, element, layedit, userid;
+layui.use([ 'layer', 'jquery', 'element', 'layedit'], function(){
+	layer = layui.layer;
+	$ = layui.jquery;
+	element = layui.element;
+	layedit = layui.layedit;
+	
+	userid = $("#USERID").val();
+	// 初始化界面
+	$(function() {
+		oPageInit.pageInit();
+	})
+});
+</script>
+</html>

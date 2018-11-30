@@ -1,0 +1,59 @@
+/*第一个tan选项卡隐藏取消图标*/
+.layui-tab-title li:first-child .layui-tab-close {
+	display: none
+}
+/*隐藏/显示左边菜单按钮样式*/
+.menu-switch {
+	width: 30px;
+	height: 30px;
+	position: relative;
+	left: 200px;
+	top: 10px;
+	color: #fff;
+	background-color: #fff;
+	text-align: center;
+	line-height: 30px;
+}
+/*主体内容样式*/
+.content-body {
+	position: absolute;
+	top: 50px;
+	right: 0;
+	bottom: 0px;
+	left: 200px;
+	z-index: 1;
+	overflow: hidden
+}
+/*主体内容选项卡内容样式*/
+.content-body .layui-tab-content {
+	position: absolute;
+	top: 50px;
+	bottom: 0;
+	width: 100%;
+	padding-right: 0px;
+	overflow: hidden;
+}
+/*使iframe高度100%,它的父类高度也需要100%*/
+.content-body .layui-tab-content .layui-tab-item {
+	height: 100%
+}
+/*使iframe高度100*/
+.content-body .layui-tab-content .layui-tab-item iframe {
+	height: 100%
+}
+
+/*响应式代码控制*/
+@media screen and (max-width:768px) {
+	.layui-layout-admin .layui-bg-black {
+		left: -200px
+	}
+	.layui-layout-admin .content-body {
+		left: 0
+	}
+	.layui-layout-admin .layui-footer {
+		left: 0
+	}
+	.layui-layout-left {
+		display: none
+	}
+}

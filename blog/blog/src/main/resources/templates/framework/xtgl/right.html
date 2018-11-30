@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon"/>
+	<link rel="stylesheet" href="/lib/layui/css/layui.css" media="all">
+    <script src="/lib/layui/layui.js"></script>
+	<script type="text/javascript" src="/js/fw.js"></script>
+</head>
+<body>
+	<!-- 查询条件 -->
+	<form class="layui-form" id="queryForm">
+		<div class="layui-form-item">
+	  		<div class="layui-inline">
+			    <label class="layui-form-label">权限名称</label>
+			    <div class="layui-input-block">
+			      	<input type="text" name="RIGHTNAME" placeholder="菜单名称" autocomplete="off" class="layui-input">
+			    </div>
+			</div>
+		  	<div class="layui-inline">
+			    <label class="layui-form-label">所属系统</label>
+			    <div class="layui-input-block">
+			      	<select name="SUBSYSTYPE" dictType="SUBSYSTYPE" isSelect="true"></select>
+			    </div>
+			</div>
+		  	<div class="layui-inline">
+			    <label class="layui-form-label">权限级别</label>
+			    <div class="layui-input-block">
+			    	<select name="RIGHTLEVEL" dictType="RIGHTLEVEL" isSelect="true"></select>
+			    </div>
+			</div>	    
+	  	</div>
+	  	<p align="center">
+	  		<button class="layui-btn" onclick="oButtonInit.doQuery(); return false;">&emsp;<i class="layui-icon">&#xe669;</i> 查&nbsp;询&emsp;</button>
+	  		<button class="layui-btn" type="reset">&emsp;<i class="layui-icon">&#x1006;</i> 清&nbsp;除&emsp;</button>
+	  		<button class="layui-btn" onclick="oButtonInit.doAdd(); return false;">&emsp;<i class="layui-icon">&#xe608;</i> 新&nbsp;增&emsp;</button>
+	  	</p>
+	</form>
+	
+	<!-- 查询结果 -->
+	<div style="width: 99%">
+		<table class="layui-table" id="rightList" lay-filter="rightTable"></table>
+	</div>
+	
+	<!-- right操作 -->
+	<script type="text/html" id="rightBar">
+		<button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="update">
+			<i class="layui-icon">&#xe642;</i> 修改
+		</button>
+  		<button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delete">
+			<i class="layui-icon">&#xe640;</i> 删除
+		</button>
+	</script>
+	
+	<!-- saveOrUpdate -->
+	<div id="saveOrUpdate" style="display: none;">
+		<div style="padding: 20px;">
+			<form class="layui-form" id="saveForm">
+				<div class="layui-form-item">
+					<div class="layui-inline">
+					    <label class="layui-form-label">权限id</label>
+					    <div class="layui-input-block">
+					      	<input type="text" name="RIGHTID" placeholder="菜单id" autocomplete="off" 
+					      		class="layui-input" lay-verify="required|number|maxlength4|minlength2">
+					    </div>
+				    </div>
+				    <div class="layui-inline">
+					    <label class="layui-form-label">所属系统</label>
+					    <div class="layui-input-block">
+					    	<select name="SUBSYSTYPE" dictType="SUBSYSTYPE" isSelect="true" lay-verify="required"></select>
+					    </div>
+				    </div>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-inline">
+					    <label class="layui-form-label">权限名称</label>
+					    <div class="layui-input-block">
+					      	<input type="text" name="RIGHTNAME" placeholder="菜单名称" autocomplete="off" 
+					      		class="layui-input" lay-verify="required|maxlength30">
+					    </div>
+				    </div>
+				    <div class="layui-inline">
+					    <label class="layui-form-label">权限级别</label>
+					    <div class="layui-input-block">
+					    	<select name="RIGHTLEVEL" dictType="RIGHTLEVEL" isSelect="true" lay-filter="selectRightLevel"
+					    		lay-verify="required"></select>
+					    </div>
+				    </div>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-inline">
+					    <label class="layui-form-label">权限URL</label>
+					    <div class="layui-input-block">
+					      	<input type="text" name="URL" placeholder="菜单URL" autocomplete="off" 
+					      		class="layui-input" lay-verify="required|maxlength100|url">
+					    </div>
+				    </div>
+				    <div class="layui-inline">
+					    <label class="layui-form-label">权限图标</label>
+					    <div class="layui-input-block">
+					    	<input type="text" name="ICON" id="iconPicker" lay-filter="iconPicker" placeholder="菜单图标" 
+					    		autocomplete="off" class="layui-input" lay-verify="required">
+					    </div>
+				    </div>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-inline">
+					    <label class="layui-form-label">权限排序</label>
+					    <div class="layui-input-block">
+					      	<input type="text" name="SORTNO" placeholder="菜单排序" autocomplete="off" class="layui-input">
+					    </div>
+				    </div>
+				    <div class="layui-inline">
+					    <label class="layui-form-label">父权限ID</label>
+					    <div class="layui-input-block">
+					    	<input type="text" name="PARENTID" placeholder="父菜单ID" autocomplete="off" class="layui-input">
+					    </div>
+				    </div>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-inline">
+					    <label class="layui-form-label">权限类别</label>
+					    <div class="layui-input-block">
+					    	<select name="RIGHTTYPE" dictType="RIGHTTYPE" isSelect="false" lay-verify="required"></select>
+					    </div>
+				    </div>
+				    <div class="layui-inline">
+					    <label class="layui-form-label">是否认证</label>
+					    <div class="layui-input-block">
+					    	<select name="AUTHED" dictType="SFBZ" isSelect="false" lay-verify="required"></select>
+					    </div>
+				    </div>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-inline">
+					    <label class="layui-form-label">备注</label>
+					    <div class="layui-input-block">
+					      	<input type="text" name="MEMO" placeholder="备注" autocomplete="off" class="layui-input">
+					    </div>
+				    </div>
+				    <div class="layui-inline">
+					    <label class="layui-form-label">有效标志</label>
+					    <div class="layui-input-block">
+					    	<select name="VALIDATED" dictType="VALIDATED" isSelect="false" lay-verify="required"></select>
+					    </div>
+				    </div>
+				</div>
+				<p align="center">
+			  		<button class="layui-btn" onclick="oButtonInit.doSave(); return false;">
+			  			&emsp;<i class="layui-icon">&#xe605;</i> 保&nbsp;存&emsp;
+			  		</button>
+			  		<button class="layui-btn" type="reset">&emsp;<i class="layui-icon">&#x1006;</i> 清&nbsp;除&emsp;</button>
+			  	</p>
+			</form>
+		</div>
+	</div>
+</body>
+<!--js逻辑-->
+<script type="text/javascript" src="/js/framework/xtgl/right.js"></script>
+<script type="text/javascript">
+var element, $, layer, table, form, iconPicker;
+
+// 引入图标扩展模块
+layui.config({
+	base: '/lib/layui/lay/modules'
+}).extend({
+	iconPicker: '/iconPicker'
+});
+
+layui.use([ 'element', 'layer', 'jquery', 'table', 'form', 'iconPicker'], function() {
+	element = layui.element;
+	$ = layui.jquery;
+	layer = layui.layer;
+	table = layui.table;
+	form = layui.form;
+	iconPicker = layui.iconPicker;
+
+	$(function(){
+		oPageInit.pageInit();
+	})
+});
+</script>
+</html>

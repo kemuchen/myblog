@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon"/>
+	<link rel="stylesheet" href="/lib/layui/css/layui.css" media="all">
+    <script src="/lib/layui/layui.js"></script>
+	<script type="text/javascript" src="/js/fw.js"></script>
+</head>
+<body>
+	<!-- 查询条件 -->
+	<form class="layui-form" id="queryForm">
+		<div class="layui-form-item">
+	  		<div class="layui-inline">
+			    <label class="layui-form-label">用户名</label>
+			    <div class="layui-input-block">
+			      	<input type="text" name="USERNAME" placeholder="用户名 " autocomplete="off" class="layui-input">
+			    </div>
+			</div>
+		  	<div class="layui-inline">
+			    <label class="layui-form-label">登录id</label>
+			    <div class="layui-input-block">
+			      	<input type="text" name="LOGINID" placeholder="登录id" autocomplete="off" class="layui-input">
+			    </div>
+			</div>
+		  	<div class="layui-inline">
+			    <label class="layui-form-label">用户状态</label>
+			    <div class="layui-input-block">
+			    	<select name="STATE" dictType="STATE" isSelect="true"></select>
+			    </div>
+			</div>	    
+	  	</div>
+	  	<p align="center">
+	  		<button class="layui-btn" onclick="oButtonInit.doQuery(); return false;">&emsp;<i class="layui-icon">&#xe669;</i> 查&nbsp;询&emsp;</button>
+	  		<button class="layui-btn" type="reset">&emsp;<i class="layui-icon">&#x1006;</i> 清&nbsp;除&emsp;</button>
+	  		<button class="layui-btn" onclick="oButtonInit.doAdd(); return false;">&emsp;<i class="layui-icon">&#xe608;</i> 新&nbsp;增&emsp;</button>
+	  	</p>
+	</form>
+	
+	<!-- 查询结果 -->
+	<div style="width: 99%">
+		<table class="layui-table" id="userList" lay-filter="userTable"></table>
+	</div>
+	
+	<!-- 角色操作 -->
+	<script type="text/html" id="roleBar">
+		<button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="update">
+			<i class="layui-icon">&#xe642;</i> 修改
+		</button>
+  		<button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delete">
+			<i class="layui-icon">&#xe640;</i> 删除
+		</button>
+		<button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="authorize">
+			<i class="layui-icon">&#xe608;</i> 授权
+		</button>
+		<button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="unauthorized">
+			<i class="layui-icon">&#xe640;</i> 取消授权
+		</button>
+	</script>
+	
+	<!-- 新增更新窗口 -->
+	<div id="saveOrUpdate" style="display: none;">
+		<div style="padding: 20px;">
+			<form class="layui-form" id="saveForm">
+				<input type="hidden" name="USERID" class="layui-input">
+				<div class="layui-form-item">
+					<div class="layui-inline">
+					    <label class="layui-form-label">用户名</label>
+					    <div class="layui-input-block">
+					      	<input type="text" name="USERNAME" placeholder="用户名" autocomplete="off" 
+					      		class="layui-input" lay-verify="required|maxlength15">
+					    </div>
+				    </div>
+				    <div class="layui-inline">
+					    <label class="layui-form-label">登录id</label>
+					    <div class="layui-input-block">
+					    	<input type="text" name="LOGINID" placeholder="登录id" autocomplete="off" 
+					      		class="layui-input" lay-verify="maxlength40">
+					    </div>
+				    </div>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-inline">
+					    <label class="layui-form-label">用户类别</label>
+					    <div class="layui-input-block">
+					    	<select name="USERTYPE" dictType="USERTYPE" isSelect="true"></select>
+					    </div>
+				    </div>
+				    <div class="layui-inline">
+					    <label class="layui-form-label">用户密码</label>
+					    <div class="layui-input-block">
+					    	<input type="password" name="PASSWORD" placeholder="密码" autocomplete="off" 
+					      		class="layui-input" lay-verify="required|maxlength40">
+					    </div>
+				    </div>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-inline">
+					    <label class="layui-form-label">电话</label>
+					    <div class="layui-input-block">
+					    	<input type="text" name="TELEPHONE" placeholder="电话" autocomplete="off" 
+					      		class="layui-input" lay-verify="phone|maxlength20">
+					    </div>
+				    </div>
+				    <div class="layui-inline">
+					    <label class="layui-form-label">邮箱</label>
+					    <div class="layui-input-block">
+					    	<input type="text" name="EMAIL" placeholder="邮箱" autocomplete="off" 
+					      		class="layui-input" lay-verify="email|maxlength100">
+					    </div>
+				    </div>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-inline">
+						<label class="layui-form-label">头像</label>
+					    <div class="layui-input-block">
+					      	<input type="text" name="PHOTO" placeholder="上传头像" autocomplete="off" 
+					      		class="layui-input" disabled="disabled" lay-verify="required">
+					    </div>
+				    </div>
+				    <button class="layui-btn" id="uploadPhoto" onclick="javascript: void(0); return false;">&emsp;<i class="layui-icon">&#xe681;</i> 上&nbsp;传&emsp;</button>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-inline">
+					    <label class="layui-form-label">用户状态</label>
+					    <div class="layui-input-block">
+					    	<select name="STATE" dictType="STATE" isSelect="true"></select>
+					    </div>
+				    </div>
+				    <div class="layui-inline">
+					    <label class="layui-form-label">备注</label>
+					    <div class="layui-input-block">
+					    	<input type="text" name="MEMO" placeholder="备注" autocomplete="off" 
+					      		class="layui-input" lay-verify="maxlength60">
+					    </div>
+				    </div>
+				</div>
+				<p align="center">
+			  		<button class="layui-btn" onclick="oButtonInit.doSave(); return false;">
+			  			&emsp;<i class="layui-icon">&#xe605;</i> 保&nbsp;存&emsp;
+			  		</button>
+			  		<button class="layui-btn" type="reset">&emsp;<i class="layui-icon">&#x1006;</i> 清&nbsp;除&emsp;</button>
+			  	</p>
+			</form>
+		</div>
+	</div>
+	
+	<!-- 授权列表 -->
+	<div id="authorize" style="display: none;">
+		<div style="width: 100%;">
+			<table class="layui-table" id="authorizeList" lay-filter="authorizeTable"></table>
+			<p align="center">
+		  		<button class="layui-btn" onclick="oButtonInit.doSaveAuthorize(); return false;">&emsp;<i class="layui-icon">&#xe669;</i> 授&nbsp;权&emsp;</button>
+		  	</p>
+		</div>
+	</div>
+	
+	<!-- 取消授权列表 -->
+	<div id="unAuthorize" style="display: none;">
+		<div style="width: 100%;">
+			<table class="layui-table" id="unAuthorizeList" lay-filter="unAuthorizeTable"></table>
+			<p align="center">
+		  		<button class="layui-btn" onclick="oButtonInit.doSaveUnAuthorize(); return false;">&emsp;<i class="layui-icon">&#xe669;</i> 取消授权</button>
+		  	</p>
+	  	</div>
+	</div>
+</body>
+<!--js逻辑-->
+<script type="text/javascript" src="/js/framework/xtgl/user.js"></script>
+<script type="text/javascript">
+var element, $, layer, table, form, upload;
+layui.use([ 'element', 'layer', 'jquery', 'table', 'form', 'upload'], function() {
+	element = layui.element;
+	$ = layui.jquery;
+	layer = layui.layer;
+	table = layui.table;
+	form = layui.form;
+	upload = layui.upload;
+
+	$(function(){
+		oPageInit.pageInit();
+	})
+});
+</script>
+</html>

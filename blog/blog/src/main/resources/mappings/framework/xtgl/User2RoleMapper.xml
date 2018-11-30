@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+    
+<mapper namespace="cn.muchen.framework.dao.mapper.xtgl.User2RoleMapper">
+	
+	<!-- 用户角色表字段 -->
+	<sql id="USER2ROLE_COLUMN">
+		USER2ROLEID, USERID, ROLEID, VALIDATED, MEMO, BAE001, BAE002, BAE003, BAE004
+	</sql>
+	
+	<!-- 分页查询前缀 -->
+	<sql id="pagePrefix">
+		select * from ( select vv.*,rownum rownum_cus
+			from (
+	</sql>
+	
+	<!-- 1分页查询后缀 -->
+	<sql id="pageSuffix">
+		) vv )
+			<where>
+				<if test="currentPage != null">
+					rownum_cus between ((#{currentPage} - 1) * #{pageSize}) + 1 and #{currentPage} * #{pageSize}
+				</if>
+			</where>
+	</sql>
+	
+	<!-- 新增用户角色信息 -->
+	<insert id="insert" parameterType="map">
+		INSERT INTO SYS_USER2ROLE(<include refid="USER2ROLE_COLUMN"/>)
+		VALUES(SEQ_USER2ROLEID.NEXTVAL, #{USERID}, #{ROLEID}, #{VALIDATED}, #{MEMO}, SYSDATE, #{BAE002}, SYSDATE, #{BAE004})
+	</insert>
+	
+	<!-- 删除用户角色信息 -->
+	<delete id="delete" parameterType="integer">
+		DELETE FROM SYS_USER2ROLE WHERE USER2ROLEID = #{USER2ROLEID}
+	</delete>
+	
+	<!-- 更新用户角色信息 -->
+	<update id="update" parameterType="map">
+		UPDATE SYS_USER2ROLE
+		<set>
+			<if test="USERID != null and USERID != ''">USERID = #{USERID},</if>
+			<if test="ROLEID != null and ROLEID != ''">ROLEID = #{ROLEID},</if>
+			<if test="VALIDATED != null and VALIDATED != ''">VALIDATED = #{VALIDATED},</if>
+			<if test="MEMO != null and MEMO != ''">MEMO = #{MEMO},</if>
+			<if test="BAE004 != null and BAE004 != ''">BAE003 = SYSDATE, BAE004 = #{BAE004},</if>
+		</set>
+	</update>
+	
+	<!-- 分页查询用户已有角色 -->
+	<select id="getUserRoleByPage" parameterType="map" resultType="map">
+		<include refid="pagePrefix"/>
+		SELECT A.USER2ROLEID, A.USERID, A.ROLEID, A.VALIDATED, A.MEMO, A.BAE001, A.BAE002, A.BAE003, A.BAE004,
+		       B.ROLENAME, B.DESCRIPTION
+		  FROM SYS_USER2ROLE A, SYS_ROLE B
+		 WHERE A.ROLEID = B.ROLEID 
+		   AND A.USERID = #{USERID} 
+		   AND A.VALIDATED = '1' 
+		   AND B.VALIDATED = '1' 
+		<include refid="pageSuffix"/>
+	</select>
+	
+	<!-- 查询用户已有角色数量 -->
+	<select id="getUserRoleCount" parameterType="map" resultType="integer">
+		SELECT COUNT(1)
+		  FROM SYS_USER2ROLE A, SYS_ROLE B
+		 WHERE A.ROLEID = B.ROLEID 
+		   AND A.USERID = #{USERID} 
+		   AND A.VALIDATED = '1' 
+		   AND B.VALIDATED = '1' 
+	</select>
+	
+	<!-- 分页查询用户没有的角色 -->
+	<select id="getUserUnRoleByPage" parameterType="map" resultType="map">
+		<include refid="pagePrefix"/>
+		SELECT A.ROLEID, A.ROLENAME, A.DESCRIPTION
+		  FROM SYS_ROLE A
+		 WHERE NOT EXISTS(SELECT 1 FROM SYS_USER2ROLE B WHERE A.ROLEID = B.ROLEID AND B.USERID = #{USERID} AND B.VALIDATED = '1')
+		   AND A.VALIDATED = '1'
+		<include refid="pageSuffix"/>
+	</select>
+	
+	<!-- 查询用户没有的角色数量 -->
+	<select id="getUserUnRoleCount" parameterType="map" resultType="integer">
+		SELECT COUNT(1)
+		  FROM SYS_ROLE A
+		 WHERE NOT EXISTS(SELECT 1 FROM SYS_USER2ROLE B WHERE A.ROLEID = B.ROLEID AND B.USERID = #{USERID} AND B.VALIDATED = '1')
+		   AND A.VALIDATED = '1'
+	</select>
+</mapper>

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+    
+<mapper namespace="cn.muchen.blog.server.dao.mapper.ArticleMapper">
+	
+	<!-- 文章信息表列名 -->
+	<sql id="BLOG_ARTICLE_COLUMN">
+		ARTICLEID, TITLE, ABSTRACT, TYPEID, TAGID, SOURCE, PHOTO, CONTENT, SFFB, AUTHOR, PRAISECOUNT, TREADCOUNT, CRITICCOUNT,
+		READCOUNT,  VALIDATED, MEMO, BAE001, BAE002, BAE003, BAE004
+	</sql>
+	
+	<!-- 返回数据类型 -->
+	<resultMap id="queryArticleMap" type="map">
+		<result column="ARTICLEID" property="ARTICLEID" jdbcType="INTEGER" />
+		<result column="TITLE" property="TITLE" jdbcType="VARCHAR" />
+		<result column="ABSTRACT" property="ABSTRACT" jdbcType="VARCHAR" />
+		<result column="TYPEID" property="TYPEID" jdbcType="VARCHAR" />
+		<result column="TAGID" property="TAGID" jdbcType="VARCHAR" />
+		<result column="SOURCE" property="SOURCE" jdbcType="VARCHAR" />
+		<result column="PHOTO" property="PHOTO" jdbcType="VARCHAR" />
+		<result column="CONTENT" property="CONTENT" typeHandler="cn.muchen.framework.dao.handler.BlobTypeHandler" />
+		<result column="SFFB" property="SFFB" jdbcType="VARCHAR" />
+		<result column="AUTHOR" property="AUTHOR" jdbcType="VARCHAR" />
+		<result column="PARENTID" property="PARENTID" jdbcType="INTEGER" />
+		<result column="READCOUNT" property="READCOUNT" jdbcType="INTEGER" />
+		<result column="VALIDATED" property="VALIDATED" jdbcType="VARCHAR" />
+		<result column="MEMO" property="MEMO" jdbcType="VARCHAR" />
+		<result column="BAE001" property="BAE001" jdbcType="DATE" />
+		<result column="BAE002" property="BAE002" jdbcType="INTEGER" />
+		<result column="BAE003" property="BAE003" jdbcType="DATE" />
+		<result column="BAE004" property="BAE004" jdbcType="INTEGER" />
+	</resultMap>
+	
+	<!-- 分页查询前缀 -->
+	<sql id="pagePrefix">
+		select * from ( select vv.*,rownum rownum_cus
+			from (
+	</sql>
+	
+	<!-- 1分页查询后缀 -->
+	<sql id="pageSuffix">
+		) vv )
+			<where>
+				<if test="currentPage != null">
+					rownum_cus between ((#{currentPage} - 1) * #{pageSize}) + 1 and #{currentPage} * #{pageSize}
+				</if>
+			</where>
+	</sql>
+	
+	<!-- 根据文章id查询文章信息 -->
+	<select id="getArticleById" parameterType="integer" resultMap="queryArticleMap">
+		SELECT <include refid="BLOG_ARTICLE_COLUMN"/> FROM BLOG_ARTICLE WHERE ARTICLEID = #{ARTICLEID}
+	</select>
+	
+	<!-- 删除文章信息 -->
+	<delete id="deleteArticle" parameterType="integer">
+		DELETE FROM BLOG_ARTICLE WHERE ARTICLEID = #{ARTICLEID}
+	</delete>
+	
+	<!-- 更新文章信息 -->
+	<update id="updateArticle" parameterType="map">
+		UPDATE BLOG_ARTICLE
+		 <set>
+		 	<if test="TITLE != null and TITLE != ''">TITLE = #{TITLE},</if>
+		 	<if test="ABSTRACT != null and ABSTRACT != ''">ABSTRACT = #{ABSTRACT},</if>
+		 	<if test="TYPEID != null and TYPEID != ''">TYPEID = #{TYPEID},</if>
+		 	<if test="TAGID != null and TAGID != ''">TAGID = #{TAGID},</if>
+		 	<if test="SOURCE != null and SOURCE != ''">SOURCE = #{SOURCE},</if>
+		 	<if test="PHOTO != null and PHOTO != ''">PHOTO = #{PHOTO},</if>
+		 	<if test="CONTENT != null and CONTENT != ''">CONTENT = #{CONTENT, typeHandler=cn.muchen.framework.dao.handler.BlobTypeHandler},</if>
+		 	<if test="SFFB != null and SFFB != ''">SFFB = #{SFFB},</if>
+		 	<if test="AUTHOR != null and AUTHOR != ''">AUTHOR = #{AUTHOR},</if>
+		 	<if test="PRAISECOUNT != null and PRAISECOUNT != ''">PRAISECOUNT = PRAISECOUNT + 1,</if>
+		 	<if test="TREADCOUNT != null and TREADCOUNT != ''">TREADCOUNT = TREADCOUNT + 1,</if>
+		 	<if test="CRITICCOUNT != null and CRITICCOUNT != ''">CRITICCOUNT = CRITICCOUNT + 1,</if>
+		 	<if test="READCOUNT != null and READCOUNT != ''">READCOUNT = READCOUNT + 1,</if>
+		 	<if test="VALIDATED != null and VALIDATED != ''">VALIDATED = #{VALIDATED},</if>
+		 	<if test="MEMO != null and MEMO != ''">MEMO = #{MEMO},</if>
+		 	<if test="BAE004 != null and BAE004 != ''">BAE003 = SYSDATE, BAE004 = #{BAE004},</if>
+		 </set>
+		 WHERE ARTICLEID = #{ARTICLEID}
+	</update>
+	
+	<!-- 新增文章信息 -->
+	<insert id="insertArticle" parameterType="map">
+		INSERT INTO BLOG_ARTICLE(<include refid="BLOG_ARTICLE_COLUMN"/>)
+		VALUES(SEQ_ARTICLEID.NEXTVAL, #{TITLE}, #{ABSTRACT}, #{TYPEID}, #{TAGID}, #{SOURCE}, #{PHOTO}, EMPTY_BLOB(), 
+		       #{SFFB}, #{AUTHOR}, 0, 0, 0, 0, #{VALIDATED}, #{MEMO}, SYSDATE, #{BAE002}, SYSDATE, #{BAE004})
+	</insert>
+	
+	<!-- 分页查询文章信息 -->
+	<select id="getArticleByPage" parameterType="map" resultMap="queryArticleMap">
+		<include refid="pagePrefix"/>
+			SELECT <include refid="BLOG_ARTICLE_COLUMN"/>
+			  FROM BLOG_ARTICLE
+			 <where>
+			 	<if test="ARTICLEID != null and ARTICLEID != ''">AND INSTR(#{ARTICLEID}, ARTICLEID) > 0</if>
+			 	<if test="TITLE != null and TITLE != ''">AND INSTR(TITLE, #{TITLE}) > 0</if>
+			 	<if test="ABSTRACT != null and ABSTRACT != ''">AND INSTR(ABSTRACT, #{ABSTRACT}) > 0</if>
+			 	<if test="TYPEID != null and TYPEID != ''">AND TYPEID = #{TYPEID}</if>
+			 	<if test="TAGID != null and TAGID != ''">AND INSTR(TAGID, #{TAGID}) > 0</if>
+			 	<if test="SOURCE != null and SOURCE != ''">AND SOURCE = #{SOURCE}</if>
+			 	<if test="SFFB != null and SFFB != ''">AND SFFB = #{SFFB}</if>
+			 	<if test="VALIDATED != null and VALIDATED != ''">AND VALIDATED = #{VALIDATED}</if>
+			 </where>
+		 	ORDER BY READCOUNT DESC
+		<include refid="pageSuffix"/>
+	</select>
+	
+	<!-- 查询文章数量 -->
+	<select id="getArticleCount" parameterType="map" resultType="integer">
+		SELECT COUNT(1) FROM BLOG_ARTICLE
+		<where>
+			<if test="ARTICLEID != null and ARTICLEID != ''">AND INSTR(#{ARTICLEID}, ARTICLEID) > 0</if>
+		 	<if test="TITLE != null and TITLE != ''">AND INSTR(TITLE, #{TITLE}) > 0</if>
+		 	<if test="ABSTRACT != null and ABSTRACT != ''">AND INSTR(ABSTRACT, #{ABSTRACT}) > 0</if>
+		 	<if test="TYPEID != null and TYPEID != ''">AND INSTR(TYPEID, #{TYPEID}) > 0</if>
+		 	<if test="TAGID != null and TAGID != ''">AND INSTR(TAGID, #{TAGID}) > 0</if>
+		 	<if test="SOURCE != null and SOURCE != ''">AND SOURCE = #{SOURCE}</if>
+		 	<if test="SFFB != null and SFFB != ''">AND SFFB = #{SFFB}</if>
+		 	<if test="VALIDATED != null and VALIDATED != ''">AND VALIDATED = #{VALIDATED}</if>
+		 </where>
+	</select>
+	
+	<!-- getRankArticles -->
+	<select id="getRankArticles" parameterType="map" resultType="map">
+		SELECT ARTICLEID, TITLE, TO_CHAR(BAE001, 'YYYY-MM-DD') EDITDATE, TYPEID, PHOTO
+		  FROM BLOG_ARTICLE
+		 <where>
+		 	<if test="TITLE != null and TITLE != ''">AND INSTR(TITLE, #{TITLE}) > 0</if>
+		 	<if test="ABSTRACT != null and ABSTRACT != ''">AND INSTR(ABSTRACT, #{ABSTRACT}) > 0</if>
+		 	<if test="TYPEID != null and TYPEID != ''">AND TYPEID = #{TYPEID}</if>
+		 	<if test="TAGID != null and TAGID != ''">AND INSTR(TAGID, #{TAGID}) > 0</if>
+		 	<if test="SOURCE != null and SOURCE != ''">AND SOURCE = #{SOURCE}</if>
+		 	<if test="SFFB != null and SFFB != ''">AND SFFB = #{SFFB}</if>
+		 	<if test="VALIDATED != null and VALIDATED != ''">AND VALIDATED = #{VALIDATED}</if>
+		 </where>
+		 ORDER BY READCOUNT DESC
+	</select>
+</mapper>

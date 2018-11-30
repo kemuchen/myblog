@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>慕辰的个人博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon"/>
+    <link rel="stylesheet" href="/css/framework/index.css" media="all" >
+	<link rel="stylesheet" href="/lib/layui/css/layui.css" media="all">
+	<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css" media="all">
+    <script src="/lib/layui/layui.js"></script>
+	<script type="text/javascript" src="/js/fw.js"></script>
+</head>
+<body class="layui-layout-body">
+    <div class="layui-layout layui-layout-admin">
+        <!--头部导航-->
+        <div class="layui-header">
+            <div class="layui-logo">慕辰的个人博客</div>
+            <div class="menu-switch">
+                <a href="javascript: menuSwitch();"><i class="layui-icon" id="menu-switch">&#xe668;</i></a>
+            </div>
+            <ul class="layui-nav layui-layout-right">
+            	<li class="layui-nav-item">
+                    <a href="javascript: void(0)" onclick="activeTab('home')"><i class="fa fa-home"></i> 首页</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript: void(0)" onclick="updatePwd()"><i class="fa fa-pencil-square-o"></i> 修改密码</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript: void(0)" onclick="logout()"><i class="fa fa-power-off"></i> 退出登录</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;">
+                        <i class="fa fa-user"></i> 
+                        <span th:text="${session.user == null} ? '请登录' : ${session.user.USERNAME}"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <!--左侧导航区域-->
+        <div class="layui-side layui-bg-black">
+            <div class="layui-side-scroll">
+                <ul class="layui-nav layui-nav-tree" lay-shrink="all" lay-filter="" 
+                	th:if="${session.user != null}">
+                	<li class="layui-nav-item" th:each="right, rightStat: ${session.user.RIGHTIS}">
+                		<span th:if="${right.RIGHTTYPE == '1'}" th:class="${rightStat.index == 0} ? 'layui-nav-itemed' : ''">
+	                        <a class="" href="javascript:;">
+	                        	<span th:if="${right.ICON != null}">
+	                        		<i th:class="'layui-icon ' + ${right.ICON}"></i>
+	                        	</span>
+	                            <span th:text="'&nbsp;' +${right.RIGHTNAME}"></span>
+	                        </a>
+	                        <dl class="layui-nav-child">
+	                            <dd onclick="addTab(this)" th:each="children: ${right.CHILDREN}">
+	                            	<a href="javascript:;" th:attr="path='' + ${children.URL},tab-id=${children.RIGHTID},icon=${children.ICON}">&emsp;
+	                            		<span th:if="${children.ICON != null}">
+			                        		<i th:class="'layui-icon ' + ${children.ICON}"></i>
+			                        	</span>
+	                            		<span th:text="'&nbsp;' + ${children.RIGHTNAME}"></span>
+	                            	</a>
+	                            </dd>
+	                        </dl>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- 内容主体区域 -->
+        <div class="content-body">
+            <div class="layui-tab layui-tab-brief" lay-filter="tab" lay-allowClose="true">
+                <ul class="layui-tab-title">
+                    <li class="layui-this" lay-id="home"><i class="layui-icon">&#xe68e;</i>首页</li>
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <iframe src='/xtgl/index/main' frameborder="0" scrolling="yes" width="99%" height="100%"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<!--js逻辑-->
+<script type="text/javascript" src="/js/framework/index.js"></script>
+<script>
+var element, layer, $;
+layui.use(['element', 'layer', 'jquery'], function () {
+	element = layui.element;
+	layer = layui.layer;
+	$ = layui.jquery;
+});
+</script>
+</html>
