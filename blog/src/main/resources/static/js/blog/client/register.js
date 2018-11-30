@@ -203,7 +203,7 @@ _RegisterBtn.prototype = {
 		}
 		QC.Login.showPopup({
 		      appId:"101528188",
-		      redirectURI:"http://22815l1b14.iask.in/thirdLogin/qqLogin/" + url
+		      redirectURI:"http://22815l1b14.iask.in/thirdLogin/qqLogin"
 		});
 	},
 
