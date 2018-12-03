@@ -14,6 +14,10 @@ import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -29,7 +33,33 @@ public class HttpRequestUtil {
 	private static Integer socketTimeout = 360000;
 	private static String proxyHost = null;
 	private static Integer proxyPort = null;
+	
+	/** 日志打印对象 */
+	private static Logger logger = LoggerFactory.getLogger(HttpRequestUtil.class);
 
+	/**
+	 * @throws Exception 
+	 * 
+	 * @Title：doGet 
+	 * @param ：@param url
+	 * @param ：@param params
+	 * @param ：@return 
+	 * @return ：String 
+	 * @throws
+	 */
+	public static String doGet(String url, Map<String, Object> params) throws Exception {
+		logger.info("【HttpRequestUtil.doGet】http请求：url=" + url + "?" + params);
+		Set<String> keySet = params.keySet();
+		
+		// 拼接参数
+		StringBuilder urlBuilder = new StringBuilder(url).append("?");
+		for (String key : keySet) {
+			urlBuilder.append(key).append("=").append(params.get(key)).append("&");
+		}
+		
+		return doGet(urlBuilder.toString().substring(0, urlBuilder.length() - 1));
+	}
+	
 	/**
 	 * Do GET request
 	 * 
@@ -39,7 +69,7 @@ public class HttpRequestUtil {
 	 * @throws IOException
 	 */
 	public static String doGet(String url) throws Exception {
-
+		logger.info("【HttpRequestUtil.doGet】http请求：url=" + url);
 		URL localURL = new URL(url);
 
 		URLConnection connection = openConnection(localURL);
@@ -95,7 +125,7 @@ public class HttpRequestUtil {
 	 * @throws Exception
 	 */
 	public static String doPost(String url, Map<String, Object> parameterMap) throws Exception {
-
+		logger.info("【HttpRequestUtil.doPost】http请求：url=" + url + "?" + parameterMap);
 		/* Translate parameter map to parameter date string */
 		StringBuffer parameterBuffer = new StringBuffer();
 		if (parameterMap != null) {

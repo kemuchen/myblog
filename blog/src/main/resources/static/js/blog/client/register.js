@@ -197,14 +197,10 @@ _RegisterBtn.prototype = {
 	 * 第三方QQ登录
 	 */
 	loginQQ: function() {
-		var url = $("#url").val();
-		if (fw.isEmpty(url)) {
-			url = "home";
-		}
-		QC.Login.showPopup({
-		      appId:"101528188",
-		      redirectURI:"http://22815l1b14.iask.in/thirdLogin/qqLogin"
-		});
+		let clientId = '101528188';
+		let redirect_uri = 'http://22815l1b14.iask.in/thirdLogin/qqLogin';
+		let state = '123456789';
+	    window.open(`https://graph.qq.com/oauth2.0/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirect_uri)}&state=${state}`);
 	},
 
 	/**
@@ -225,7 +221,7 @@ _RegisterBtn.prototype = {
 			window.top.location.reload();
 		} else {
 			// 登录失败
-			layer.msg(data.message, {
+			layer.alert(data.message, {
 				icon: '2'
 			});
 		}
