@@ -166,7 +166,7 @@ CPageInit.prototype = {
 	 * 
 	 */
 	initTypes: function() {
-		var articleTypes = fw.getDynamicDicts('atricle_manager_typeid', ' TYPENAME != \'系统公告\'');
+		var articleTypes = fw.getDynamicDicts('atricle_manager_typeid', ' 1 = 1');
 		var typeStr = '';
 		for (var i = 0; i < articleTypes.length; i ++) {
 			if (i == 0) {
