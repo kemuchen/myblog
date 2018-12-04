@@ -60,8 +60,6 @@
 			<if test="EMAIL != null and EMAIL != ''">EMAIL = #{EMAIL},</if>
 			<if test="TELEPHONE != null and TELEPHONE != ''">TELEPHONE = #{TELEPHONE},</if>
 			<if test="STATE != null and STATE != ''">STATE = #{STATE},</if>
-			<if test="LOGINFAIL != null and LOGINFAIL != ''">LOGINFAIL = #{LOGINFAIL},</if>
-			<if test="LOGINTIME != null and LOGINTIME != ''">LOGINTIME = #{LOGINTIME},</if>
 			<if test="PHOTO != null and PHOTO != ''">PHOTO = #{PHOTO},</if>
 			<if test="MEMO != null and MEMO != ''">MEMO = #{MEMO},</if>
 			<if test="BAE004 != null and BAE004 != ''">BAE003 = SYSDATE, BAE004 = #{BAE004},</if>

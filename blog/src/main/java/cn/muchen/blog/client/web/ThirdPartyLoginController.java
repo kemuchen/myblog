@@ -227,6 +227,11 @@ public class ThirdPartyLoginController {
 			userServiceImpl.saveUser(params);
 
 			user = userServiceImpl.findUserByLoginid((String) params.get("LOGINID"));
+		} else {
+			// 用户不存在，则新增
+			user.put("USERNAME", params.get("USERNAME")); // 密码为空
+			user.put("PHOTO", params.get("PHOTO"));
+			userServiceImpl.saveUser(user);
 		}
 		return user;
 	}
